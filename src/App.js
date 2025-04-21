@@ -11,7 +11,12 @@ export default function App() {
 		<div className='App'>
 			<Header>🏋️ MyWorkoutApp</Header>
 			<DaySelector OnSetCurrentDay={SetCurrentDay}></DaySelector>
-			<AddExercise formIsOpen={formIsOpen} onSetFormIsOpen={SetFormIsOpen} />
+			<AddExercise
+				formIsOpen={formIsOpen}
+				onSetFormIsOpen={SetFormIsOpen}
+				OnSetPlan={SetPlan}
+				currentDay={currentDay}
+			/>
 			<ExerciseList plan={plan} currentDay={currentDay} />
 			<WorkoutList plan={plan} currentDay={currentDay} />
 			<WorkoutSummary />
@@ -31,15 +36,29 @@ function DaySelector({ OnSetCurrentDay }) {
 	)
 }
 
-function AddExercise({ formIsOpen, onSetFormIsOpen }) {
+function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay }) {
 	const [exerciseName, SetExerciseName] = useState('')
 	const [exerciseSets, SetExerciseSets] = useState('')
 	const [exerciseRest, SetExerciseRest] = useState('')
 	const [exerciseTargetWeight, SetExerciseTargetWeight] = useState('')
 	const [exerciseCategory, SetExerciseCategory] = useState('core')
 
-	function addNewExercise() {
+	function addNewExercise(e) {
+		e.preventDefault()
 		if (!exerciseName && exerciseSets !== 0 && exerciseTargetWeight !== 0) return
+
+		const newExercise = {
+			id: crypto.randomUUID(),
+			name: exerciseName,
+			sets: exerciseSets,
+			rest: exerciseRest,
+			targetWeight: exerciseTargetWeight,
+			category: exerciseCategory,
+		}
+
+		OnSetPlan(plan =>
+			plan.map(day => (day.day === currentDay ? { ...day, exercises: [...day.exercises, newExercise] } : day))
+		)
 	}
 
 	return (
@@ -50,7 +69,7 @@ function AddExercise({ formIsOpen, onSetFormIsOpen }) {
 				</Button>
 			</div>
 			{formIsOpen && (
-				<form>
+				<form onSubmit={addNewExercise}>
 					<h2>Add New Exercise</h2>
 					<div>
 						<label>Name:</label>
