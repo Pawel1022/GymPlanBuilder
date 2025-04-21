@@ -4,14 +4,16 @@ import { weekDays, weeklyWorkoutPlan, exerciseCategories } from './data'
 import { useState } from 'react'
 
 export default function App() {
+	const [plan, SetPlan] = useState(weeklyWorkoutPlan)
 	const [currentDay, SetCurrentDay] = useState('Mon')
+	const [formIsOpen, SetFormIsOpen] = useState(false)
 	return (
 		<div className='App'>
 			<Header>🏋️ MyWorkoutApp</Header>
 			<DaySelector OnSetCurrentDay={SetCurrentDay}></DaySelector>
-			<AddExercise />
-			<ExerciseList currentDay={currentDay} />
-			<WorkoutList currentDay={currentDay} />
+			<AddExercise formIsOpen={formIsOpen} onSetFormIsOpen={SetFormIsOpen} />
+			<ExerciseList plan={plan} currentDay={currentDay} />
+			<WorkoutList plan={plan} currentDay={currentDay} />
 			<WorkoutSummary />
 		</div>
 	)
@@ -29,35 +31,64 @@ function DaySelector({ OnSetCurrentDay }) {
 	)
 }
 
-function AddExercise() {
-	const formIsOpen = true
+function AddExercise({ formIsOpen, onSetFormIsOpen }) {
+	const [exerciseName, SetExerciseName] = useState('')
+	const [exerciseSets, SetExerciseSets] = useState('')
+	const [exerciseRest, SetExerciseRest] = useState('')
+	const [exerciseTargetWeight, SetExerciseTargetWeight] = useState('')
+	const [exerciseCategory, SetExerciseCategory] = useState('core')
+
+	function addNewExercise() {
+		if (!exerciseName && exerciseSets !== 0 && exerciseTargetWeight !== 0) return
+	}
+
 	return (
 		<>
 			<div className='AddExercise'>
-				<Button styleEl={'success'}>Add Exercise ➕</Button>
+				<Button fn={() => onSetFormIsOpen(!formIsOpen)} styleEl={formIsOpen ? 'danger' : 'succes'}>
+					{formIsOpen ? 'Close ❌' : 'Add New Exercise ➕'}
+				</Button>
 			</div>
 			{formIsOpen && (
 				<form>
 					<h2>Add New Exercise</h2>
 					<div>
 						<label>Name:</label>
-						<input type='text' placeholder='Type exercise name ...'></input>
+						<input
+							type='text'
+							placeholder='Type exercise name ...'
+							value={exerciseName}
+							onChange={e => SetExerciseName(e.target.value)}></input>
 					</div>
 					<div>
 						<label>Sets:</label>
-						<input type='number' min={1} placeholder='Num sets ...'></input>
+						<input
+							type='number'
+							min={1}
+							placeholder='Num sets ...'
+							value={exerciseSets}
+							onChange={e => SetExerciseSets(+e.target.value)}></input>
 					</div>
 					<div>
 						<label>Rest:</label>
-						<input type='number' min={1} placeholder='Break in seconds /s'></input>
+						<input
+							type='number'
+							min={1}
+							placeholder='Break in seconds /s'
+							value={exerciseRest}
+							onChange={e => SetExerciseRest(+e.target.value)}></input>
 					</div>
 					<div>
 						<label>Target Weight:</label>
-						<input type='number' placeholder='Target Weight (optional)'></input>
+						<input
+							type='number'
+							placeholder='Target Weight (optional)'
+							value={exerciseTargetWeight}
+							onChange={e => SetExerciseTargetWeight(+e.target.value)}></input>
 					</div>
 					<div>
 						<label>Exercise category:</label>
-						<select>
+						<select value={exerciseCategory} onChange={e => SetExerciseCategory(e.target.value)}>
 							{exerciseCategories.map(exercise => (
 								<option value={exercise.value} key={exercise.id}>
 									{exercise.label}
@@ -66,7 +97,14 @@ function AddExercise() {
 						</select>
 					</div>
 					<div>
-						<Button styleEl={'danger'}>Cancel ❌</Button>
+						<Button
+							fn={e => {
+								e.preventDefault()
+								onSetFormIsOpen(!formIsOpen)
+							}}
+							styleEl={'danger'}>
+							Cancel ❌
+						</Button>
 						<Button styleEl={'success'}>Save 💾</Button>
 					</div>
 				</form>
@@ -75,11 +113,11 @@ function AddExercise() {
 	)
 }
 
-function ExerciseList({ currentDay }) {
+function ExerciseList({ plan, currentDay }) {
 	return (
 		<div>
 			<ul>
-				{weeklyWorkoutPlan
+				{plan
 					.filter(workout => workout.day === currentDay)
 					.map(workout =>
 						workout.exercises.map(exercise => (
@@ -137,8 +175,8 @@ function ExerciseItem({ name, sets, reps, target, category, rest }) {
 	)
 }
 
-function WorkoutList({ currentDay }) {
-	const activeWorkout = weeklyWorkoutPlan
+function WorkoutList({ plan, currentDay }) {
+	const activeWorkout = plan
 		.filter(workout => workout.day === currentDay)
 		.flatMap(workout => workout.exercises.map(exercises => exercises))
 
