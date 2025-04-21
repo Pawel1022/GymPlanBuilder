@@ -1,0 +1,344 @@
+:root {
+	/* Base Backgrounds */
+	--color-bg: #0d0d0d;
+	--color-surface: #1a1a1a;
+
+	/* Primary Accent */
+	--color-accent: #00c6a2;
+	--color-accent-light: #33d6b7;
+	--color-accent-dark: #00967e;
+
+	/* Text */
+	--color-text-primary: #ffffff;
+	--color-text-secondary: #b3b3b3;
+	--color-text-muted: #888888;
+
+	/* Buttons / States */
+	--color-success: #3cd070;
+	--color-danger: #ff4d4d;
+	--color-warning: #ffa726;
+	--color-info: #29b6f6;
+
+	/* Inputs & Borders */
+	--color-input-bg: #262626;
+	--color-border: #444444;
+
+	/* Shadows */
+	--color-shadow: rgba(0, 0, 0, 0.3);
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-size: 62.5%;
+}
+
+body {
+	width: 100vw;
+	height: 100vh;
+	font-family: 'Rubik', sans-serif;
+	background-color: var(--color-bg);
+	color: var(--color-text-primary);
+	padding: 1.5rem;
+	overflow-x: hidden;
+}
+
+.App {
+	margin: 0 auto;
+	max-width: 96rem;
+	background-color: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: 10px;
+	box-shadow: 0 4px 20px var(--color-shadow);
+	padding: 4rem;
+}
+
+header {
+	text-align: center;
+	padding: 2rem 0;
+	border-bottom: 1px solid var(--color-border);
+}
+
+header h1 {
+	font-size: 3.2rem;
+	color: var(--color-accent);
+	text-shadow: 1px 1px 2px #000;
+}
+
+.DaySelector {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 0.75rem;
+	margin: 2rem 0;
+}
+
+.DaySelector button {
+	font-weight: 600;
+	padding: 0.35rem 0.1rem;
+	background-color: var(--color-input-bg);
+	border: 1px solid var(--color-border);
+	transition: background-color 0.3s ease;
+}
+
+.DaySelector button:hover {
+	background-color: var(--color-accent-dark);
+}
+
+.AddExercise {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	padding: 2rem;
+	background-color: var(--color-input-bg);
+	border-radius: 10px;
+	margin-bottom: 2rem;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	justify-content: center;
+	padding: 2rem;
+	background-color: var(--color-surface);
+	border-radius: 10px;
+	border: 1px solid var(--color-border);
+}
+
+form div {
+	display: grid;
+	grid-template-columns: 1fr 2fr;
+	gap: 1rem;
+	align-items: center;
+}
+
+form label {
+	font-weight: 500;
+	font-size: 1.5rem;
+	color: var(--color-text-secondary);
+}
+
+form input,
+form select {
+	padding: 0.6rem 1.2rem;
+	border-radius: 6px;
+	background-color: var(--color-input-bg);
+	color: var(--color-text-primary);
+	border: 1px solid var(--color-border);
+	font-size: 1.4rem;
+	width: 100%;
+}
+
+form div:last-child {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+button {
+	background-color: var(--color-accent);
+	color: var(--color-text-primary);
+	padding: 0.75rem 1.5rem;
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	font-weight: 600;
+	font-family: inherit;
+	font-size: 1.4rem;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+	box-shadow: 0 2px 6px var(--color-shadow);
+}
+
+button:hover {
+	background-color: var(--color-accent-light);
+	transform: translateY(-2px);
+}
+
+button:active {
+	transform: scale(0.97);
+}
+
+button.success {
+	background-color: var(--color-success);
+}
+button.success:hover {
+	background-color: #2bbf61;
+}
+
+button.danger {
+	background-color: var(--color-danger);
+}
+button.danger:hover {
+	background-color: #e64444;
+}
+
+ul {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: stretch;
+	gap: 2rem;
+	padding: 2rem 0;
+}
+
+li {
+	background-color: var(--color-input-bg);
+	padding: 1.5rem;
+	border-radius: 8px;
+	border: 1px solid var(--color-border);
+	box-shadow: 0 2px 8px var(--color-shadow);
+}
+
+li div {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.75rem;
+	align-items: center;
+	margin-bottom: 1rem;
+}
+
+li div:last-child {
+	grid-template-columns: 1fr;
+	gap: 1.5rem;
+	margin-top: 1rem;
+}
+
+li div p {
+	justify-self: end;
+	font-weight: 500;
+	font-size: 1.4rem;
+	color: var(--color-text-secondary);
+}
+
+.WorkoutItem {
+	width: 100%;
+	background-color: var(--color-surface);
+	border-radius: 8px;
+	padding: 1rem 2;
+	box-shadow: 0 2px 10px var(--color-shadow);
+	transition: background-color 0.3s ease;
+	cursor: pointer;
+}
+
+.WorkoutItem:hover {
+	background-color: #222;
+}
+
+.WorkoutHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 1.6rem;
+	font-weight: 600;
+	color: var(--color-text-primary);
+}
+
+.WorkoutHeader button {
+	background: none;
+	border: none;
+	color: var(--color-text-primary);
+	font-size: 2rem;
+	cursor: pointer;
+	transform: rotate(0deg);
+	transition: transform 0.3s ease;
+}
+
+.WorkoutHeader.open button {
+	transform: rotate(180deg);
+}
+
+.arrow-icon {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: transform 0.3s ease;
+}
+
+.WorkoutHeader.open .arrow-icon {
+	transform: rotate(180deg);
+}
+
+.WorkoutDetails {
+	overflow: hidden;
+	max-height: 0;
+	opacity: 0;
+	transition: max-height 0.4s ease, opacity 0.4s ease;
+	padding-top: 0;
+}
+
+.WorkoutDetails.open {
+	max-height: 500px;
+	opacity: 1;
+	padding-top: 1.5rem;
+}
+
+.WorkoutDetails li {
+	padding: 0.5rem 0;
+	border-bottom: 1px solid var(--color-border);
+	color: var(--color-text-secondary);
+	font-size: 1.4rem;
+}
+
+.BreakTimer {
+	background-color: var(--color-surface);
+	color: var(--color-accent);
+	text-align: center;
+	padding: 1.5rem 2rem;
+	margin: 2rem auto;
+	border-radius: 8px;
+	font-size: 2.4rem;
+	font-weight: 700;
+	box-shadow: 0 2px 10px var(--color-shadow);
+	width: fit-content;
+	animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+	0% {
+		transform: scale(1);
+		opacity: 1;
+	}
+	50% {
+		transform: scale(1.05);
+		opacity: 0.8;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+}
+
+.WorkoutSummary {
+	background-color: var(--color-surface);
+	color: var(--color-text-primary);
+	padding: 2rem;
+	margin: 3rem auto;
+	border-radius: 8px;
+	width: 100%;
+	max-width: 400px;
+	box-shadow: 0 2px 10px var(--color-shadow);
+	text-align: center;
+}
+
+.WorkoutSummary p {
+	font-size: 1.6rem;
+	font-weight: 500;
+	margin: 1rem 0;
+}
+
+.WorkoutSummary .total {
+	color: var(--color-text-secondary);
+}
+
+.WorkoutSummary .completed {
+	color: var(--color-success);
+}
+
+.WorkoutSummary .missed {
+	color: var(--color-danger);
+}
