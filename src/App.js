@@ -1,7 +1,7 @@
 import { Header } from './Header'
 import { Button } from './Button'
 import { weekDays, weeklyWorkoutPlan, exerciseCategories } from './data'
-import { useState } from 'react'
+import { use, useState } from 'react'
 
 export default function App() {
 	const [plan, SetPlan] = useState(weeklyWorkoutPlan)
@@ -38,14 +38,17 @@ function DaySelector({ OnSetCurrentDay }) {
 
 function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay }) {
 	const [exerciseName, SetExerciseName] = useState('')
+	const [exerciseType, SetExerciseType] = useState('weights')
 	const [exerciseSets, SetExerciseSets] = useState('')
+	const [exerciseReps, SetExerciseReps] = useState('')
 	const [exerciseRest, SetExerciseRest] = useState('')
 	const [exerciseTargetWeight, SetExerciseTargetWeight] = useState('')
 	const [exerciseCategory, SetExerciseCategory] = useState('core')
+	const [exerciseTime, SetExerciseTime] = useState('')
 
 	function addNewExercise(e) {
 		e.preventDefault()
-		if (!exerciseName && exerciseSets !== 0 && exerciseTargetWeight !== 0) return
+		//
 
 		const newExercise = {
 			id: crypto.randomUUID(),
@@ -59,6 +62,13 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay }) {
 		OnSetPlan(plan =>
 			plan.map(day => (day.day === currentDay ? { ...day, exercises: [...day.exercises, newExercise] } : day))
 		)
+
+		SetExerciseName('')
+		SetExerciseSets('')
+		SetExerciseRest('')
+		SetExerciseTargetWeight('')
+		SetExerciseCategory('core')
+		onSetFormIsOpen(false)
 	}
 
 	return (
@@ -80,6 +90,14 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay }) {
 							onChange={e => SetExerciseName(e.target.value)}></input>
 					</div>
 					<div>
+						<label>Type:</label>
+						<select value={exerciseType} onChange={e => SetExerciseType(e.target.value)}>
+							<option value={'bodyweight'}>Bodyweight</option>
+							<option value={'weights'}>With weight</option>
+							<option value={'time'}>Time-based</option>
+						</select>
+					</div>
+					<div>
 						<label>Sets:</label>
 						<input
 							type='number'
@@ -88,6 +106,28 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay }) {
 							value={exerciseSets}
 							onChange={e => SetExerciseSets(+e.target.value)}></input>
 					</div>
+					{exerciseType === 'time' && (
+						<div>
+							<label>Time:</label>
+							<input
+								type='number'
+								min={1}
+								placeholder='time in seconds ...'
+								value={exerciseTime}
+								onChange={e => SetExerciseTime(+e.target.value)}></input>
+						</div>
+					)}
+					{exerciseType !== 'time' && (
+						<div>
+							<label>Reps:</label>
+							<input
+								type='number'
+								min={1}
+								placeholder='Num reps ...'
+								value={exerciseReps}
+								onChange={e => SetExerciseReps(+e.target.value)}></input>
+						</div>
+					)}
 					<div>
 						<label>Rest:</label>
 						<input
@@ -97,14 +137,16 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay }) {
 							value={exerciseRest}
 							onChange={e => SetExerciseRest(+e.target.value)}></input>
 					</div>
-					<div>
-						<label>Target Weight:</label>
-						<input
-							type='number'
-							placeholder='Target Weight (optional)'
-							value={exerciseTargetWeight}
-							onChange={e => SetExerciseTargetWeight(+e.target.value)}></input>
-					</div>
+					{exerciseType !== 'time' && exerciseType !== 'bodyweight' && (
+						<div>
+							<label>Target Weight:</label>
+							<input
+								type='number'
+								placeholder='Target Weight ...'
+								value={exerciseTargetWeight}
+								onChange={e => SetExerciseTargetWeight(+e.target.value)}></input>
+						</div>
+					)}
 					<div>
 						<label>Exercise category:</label>
 						<select value={exerciseCategory} onChange={e => SetExerciseCategory(e.target.value)}>
