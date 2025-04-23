@@ -342,3 +342,9 @@ li div p {
 .WorkoutSummary .missed {
 	color: var(--color-danger);
 }
+
+.error-msg {
+	color: var(--color-danger);
+	font-weight: 500;
+	margin-top: 1rem;
+}
