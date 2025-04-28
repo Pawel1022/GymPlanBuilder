@@ -1,13 +1,44 @@
 import { Header } from './Header'
 import { Button } from './Button'
 import { weekDays, weeklyWorkoutPlan, exerciseCategories } from './data'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function App() {
 	const [plan, SetPlan] = useState(weeklyWorkoutPlan)
 	const [currentDay, SetCurrentDay] = useState('Mon')
 	const [formIsOpen, SetFormIsOpen] = useState(false)
 	const [editingExercise, SetEditingExercise] = useState(null)
+
+	const [exerciseName, SetExerciseName] = useState('')
+	const [exerciseType, SetExerciseType] = useState('weights')
+	const [exerciseSets, SetExerciseSets] = useState('')
+	const [exerciseReps, SetExerciseReps] = useState('')
+	const [exerciseRest, SetExerciseRest] = useState('')
+	const [exerciseTargetWeight, SetExerciseTargetWeight] = useState('')
+	const [exerciseCategory, SetExerciseCategory] = useState('core')
+	const [exerciseTime, SetExerciseTime] = useState('')
+
+	useEffect(() => {
+		if (editingExercise) {
+			SetExerciseName(editingExercise.name || '')
+			SetExerciseType(editingExercise.type || 'weights')
+			SetExerciseSets(editingExercise.sets || '')
+			SetExerciseReps(editingExercise.reps || '')
+			SetExerciseRest(editingExercise.rest || '')
+			SetExerciseTargetWeight(editingExercise.targetWeight || '')
+			SetExerciseCategory(editingExercise.category || 'core')
+			SetExerciseTime(editingExercise.time || '')
+		} else {
+			SetExerciseName('')
+			SetExerciseType('weights')
+			SetExerciseSets('')
+			SetExerciseReps('')
+			SetExerciseRest('')
+			SetExerciseTargetWeight('')
+			SetExerciseCategory('core')
+			SetExerciseTime('')
+		}
+	}, [editingExercise])
 
 	function handleEdit(exercise) {
 		SetEditingExercise(exercise)
@@ -24,6 +55,23 @@ export default function App() {
 				OnSetPlan={SetPlan}
 				currentDay={currentDay}
 				editingExercise={editingExercise}
+				OnSetEditingExercise={SetEditingExercise}
+				exerciseName={exerciseName}
+				onSetExerciseName={SetExerciseName}
+				exerciseType={exerciseType}
+				onSetExerciseType={SetExerciseType}
+				exerciseSets={exerciseSets}
+				OnSetExerciseSets={SetExerciseSets}
+				exerciseReps={exerciseReps}
+				onSetExerciseReps={SetExerciseReps}
+				exerciseRest={exerciseRest}
+				OnSetExerciseRest={SetExerciseRest}
+				exerciseTargetWeight={exerciseTargetWeight}
+				onSetExererciseTargetWeight={SetExerciseTargetWeight}
+				exerciseCategory={exerciseCategory}
+				OnSetExerciseCategory={SetExerciseCategory}
+				exerciseTime={exerciseTime}
+				OnSetExerciseTime={SetExerciseTime}
 			/>
 			<ExerciseList plan={plan} currentDay={currentDay} onHandleEdit={handleEdit} />
 			<WorkoutList plan={plan} currentDay={currentDay} />
@@ -44,15 +92,30 @@ function DaySelector({ OnSetCurrentDay }) {
 	)
 }
 
-function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editingExercise }) {
-	const [exerciseName, SetExerciseName] = useState(editingExercise?.name || '')
-	const [exerciseType, SetExerciseType] = useState(editingExercise?.type || 'weights')
-	const [exerciseSets, SetExerciseSets] = useState(editingExercise?.sets || '')
-	const [exerciseReps, SetExerciseReps] = useState(editingExercise?.reps || '')
-	const [exerciseRest, SetExerciseRest] = useState(editingExercise?.rest || '')
-	const [exerciseTargetWeight, SetExerciseTargetWeight] = useState(editingExercise?.targetWeight || '')
-	const [exerciseCategory, SetExerciseCategory] = useState(editingExercise?.category || 'core')
-	const [exerciseTime, SetExerciseTime] = useState(editingExercise?.time || '')
+function AddExercise({
+	formIsOpen,
+	onSetFormIsOpen,
+	OnSetPlan,
+	currentDay,
+	editingExercise,
+	OnSetEditingExercise,
+	exerciseName,
+	onSetExerciseName,
+	exerciseType,
+	onSetExerciseType,
+	exerciseSets,
+	OnSetExerciseSets,
+	exerciseReps,
+	onSetExerciseReps,
+	exerciseRest,
+	OnSetExerciseRest,
+	exerciseTargetWeight,
+	onSetExererciseTargetWeight,
+	exerciseCategory,
+	OnSetExerciseCategory,
+	exerciseTime,
+	OnSetExerciseTime,
+}) {
 	const [formError, SetFormError] = useState('')
 
 	function addNewExercise(e) {
@@ -70,29 +133,61 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editi
 			return
 		}
 
-		const newExercise = {
-			id: crypto.randomUUID(),
-			name: exerciseName,
-			type: exerciseType,
-			sets: exerciseSets,
-			reps: exerciseType !== 'time' ? exerciseReps : null,
-			time: exerciseType === 'time' ? exerciseTime : null,
-			rest: exerciseRest,
-			targetWeight: exerciseType === 'weights' ? exerciseTargetWeight : null,
-			category: exerciseCategory,
+		if (!editingExercise) {
+			const newExercise = {
+				id: crypto.randomUUID(),
+				name: exerciseName,
+				type: exerciseType,
+				sets: exerciseSets,
+				reps: exerciseType !== 'time' ? exerciseReps : null,
+				time: exerciseType === 'time' ? exerciseTime : null,
+				rest: exerciseRest,
+				targetWeight: exerciseType === 'weights' ? exerciseTargetWeight : null,
+				category: exerciseCategory,
+			}
+
+			OnSetPlan(plan =>
+				plan.map(day => (day.day === currentDay ? { ...day, exercises: [...day.exercises, newExercise] } : day))
+			)
 		}
 
-		OnSetPlan(plan =>
-			plan.map(day => (day.day === currentDay ? { ...day, exercises: [...day.exercises, newExercise] } : day))
-		)
+		if (editingExercise) {
+			OnSetPlan(plan =>
+				plan.map(day => {
+					if (day.day !== currentDay) return day
 
-		SetExerciseName('')
-		SetExerciseSets('')
-		SetExerciseRest('')
-		SetExerciseTargetWeight('')
-		SetExerciseCategory('core')
-		SetFormError('')
+					return {
+						...day,
+						exercises: day.exercises.map(exercise =>
+							exercise.id === editingExercise.id
+								? {
+										...exercise,
+										name: exerciseName,
+										type: exerciseType,
+										sets: exerciseSets,
+										reps: exerciseType !== 'time' ? exerciseReps : null,
+										time: exerciseType === 'time' ? exerciseTime : null,
+										rest: exerciseRest,
+										targetWeight: exerciseType === 'weights' ? exerciseTargetWeight : null,
+										category: exerciseCategory,
+								  }
+								: exercise
+						),
+					}
+				})
+			)
+			OnSetEditingExercise(null)
+		}
+
 		onSetFormIsOpen(!formIsOpen)
+		onSetExerciseName('')
+		onSetExerciseType('weights')
+		OnSetExerciseSets('')
+		onSetExerciseReps('')
+		OnSetExerciseRest('')
+		onSetExererciseTargetWeight('')
+		OnSetExerciseCategory('core')
+		OnSetExerciseTime('')
 	}
 
 	return (
@@ -111,11 +206,11 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editi
 							type='text'
 							placeholder='Type exercise name ...'
 							value={exerciseName}
-							onChange={e => SetExerciseName(e.target.value)}></input>
+							onChange={e => onSetExerciseName(e.target.value)}></input>
 					</div>
 					<div>
 						<label>Type:</label>
-						<select value={exerciseType} onChange={e => SetExerciseType(e.target.value)}>
+						<select value={exerciseType} onChange={e => onSetExerciseType(e.target.value)}>
 							<option value={'bodyweight'}>Bodyweight</option>
 							<option value={'weights'}>With weight</option>
 							<option value={'time'}>Time-based</option>
@@ -128,7 +223,7 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editi
 							min={1}
 							placeholder='Num sets ...'
 							value={exerciseSets}
-							onChange={e => SetExerciseSets(+e.target.value)}></input>
+							onChange={e => OnSetExerciseSets(+e.target.value)}></input>
 					</div>
 					{exerciseType === 'time' && (
 						<div>
@@ -138,7 +233,7 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editi
 								min={1}
 								placeholder='time in seconds ...'
 								value={exerciseTime}
-								onChange={e => SetExerciseTime(+e.target.value)}></input>
+								onChange={e => OnSetExerciseTime(+e.target.value)}></input>
 						</div>
 					)}
 					{exerciseType !== 'time' && (
@@ -149,7 +244,7 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editi
 								min={1}
 								placeholder='Num reps ...'
 								value={exerciseReps}
-								onChange={e => SetExerciseReps(+e.target.value)}></input>
+								onChange={e => onSetExerciseReps(+e.target.value)}></input>
 						</div>
 					)}
 					<div>
@@ -159,7 +254,7 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editi
 							min={1}
 							placeholder='Break in seconds /s'
 							value={exerciseRest}
-							onChange={e => SetExerciseRest(+e.target.value)}></input>
+							onChange={e => OnSetExerciseRest(+e.target.value)}></input>
 					</div>
 					{exerciseType !== 'time' && exerciseType !== 'bodyweight' && (
 						<div>
@@ -168,12 +263,12 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editi
 								type='number'
 								placeholder='Target Weight ...'
 								value={exerciseTargetWeight}
-								onChange={e => SetExerciseTargetWeight(+e.target.value)}></input>
+								onChange={e => onSetExererciseTargetWeight(+e.target.value)}></input>
 						</div>
 					)}
 					<div>
 						<label>Exercise category:</label>
-						<select value={exerciseCategory} onChange={e => SetExerciseCategory(e.target.value)}>
+						<select value={exerciseCategory} onChange={e => OnSetExerciseCategory(e.target.value)}>
 							{exerciseCategories.map(exercise => (
 								<option value={exercise.value} key={exercise.id}>
 									{exercise.label}
@@ -190,7 +285,7 @@ function AddExercise({ formIsOpen, onSetFormIsOpen, OnSetPlan, currentDay, editi
 							styleEl={'danger'}>
 							Cancel ❌
 						</Button>
-						<Button styleEl={'success'}>Save 💾</Button>
+						<Button styleEl={'success'}>{editingExercise ? 'EDIT 🛠️' : 'Save 💾'}</Button>
 					</div>
 					{formError && <p className='error-msg'>{formError}</p>}
 				</form>
@@ -209,6 +304,7 @@ function ExerciseList({ plan, currentDay, onHandleEdit }) {
 						workout.exercises.map(exercise => (
 							<ExerciseItem
 								key={exercise.id}
+								id={exercise.id}
 								name={exercise.name}
 								type={exercise.type}
 								sets={exercise.sets}
@@ -227,7 +323,7 @@ function ExerciseList({ plan, currentDay, onHandleEdit }) {
 	)
 }
 
-function ExerciseItem({ name, type, sets, reps, time, target, category, rest, onHandleEdit }) {
+function ExerciseItem({ id, name, type, sets, reps, time, target, category, rest, onHandleEdit }) {
 	return (
 		<li>
 			<div>
@@ -272,6 +368,7 @@ function ExerciseItem({ name, type, sets, reps, time, target, category, rest, on
 				<Button
 					fn={() =>
 						onHandleEdit({
+							id,
 							name,
 							type,
 							sets,
